@@ -8,44 +8,44 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
     },
     "./validation": {
-      "types": "./dist/validation/index.d.ts",
       "import": "./dist/validation/index.js",
-      "require": "./dist/validation/index.cjs"
+      "require": "./dist/validation/index.cjs",
+      "types": "./dist/validation/index.d.ts"
     },
     "./format": {
-      "types": "./dist/format/index.d.ts",
       "import": "./dist/format/index.js",
-      "require": "./dist/format/index.cjs"
+      "require": "./dist/format/index.cjs",
+      "types": "./dist/format/index.d.ts"
     },
     "./brazil": {
-      "types": "./dist/brazil/index.d.ts",
       "import": "./dist/brazil/index.js",
-      "require": "./dist/brazil/index.cjs"
+      "require": "./dist/brazil/index.cjs",
+      "types": "./dist/brazil/index.d.ts"
     },
     "./converter": {
-      "types": "./dist/converter/index.d.ts",
       "import": "./dist/converter/index.js",
-      "require": "./dist/converter/index.cjs"
+      "require": "./dist/converter/index.cjs",
+      "types": "./dist/converter/index.d.ts"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.cjs"
+      "require": "./dist/utils/index.cjs",
+      "types": "./dist/utils/index.d.ts"
     },
     "./date": {
-      "types": "./dist/date/index.d.ts",
       "import": "./dist/date/index.js",
-      "require": "./dist/date/index.cjs"
+      "require": "./dist/date/index.cjs",
+      "types": "./dist/date/index.d.ts"
     },
     "./security": {
-      "types": "./dist/security/index.d.ts",
       "import": "./dist/security/index.js",
-      "require": "./dist/security/index.cjs"
+      "require": "./dist/security/index.cjs",
+      "types": "./dist/security/index.d.ts"
     }
   },
   "files": [

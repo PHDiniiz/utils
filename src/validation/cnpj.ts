@@ -42,12 +42,10 @@ export function isCNPJ(cnpj: string | number): boolean {
  * @returns CNPJ formatado ou string vazia se inválido
  */
 export function formatCNPJ(cnpj: string | number): string {
-  if (!cnpj && cnpj !== 0) return '';
-  
-  const str = String(cnpj).replace(/\D/g, '');
-  if (str.length !== 14) return '';
+  const normalized = normalizeCNPJ(cnpj);
+  if (normalized.length !== 14) return '';
 
-  return `${str.slice(0, 2)}.${str.slice(2, 5)}.${str.slice(5, 8)}/${str.slice(8, 12)}-${str.slice(12, 14)}`;
+  return `${normalized.slice(0, 2)}.${normalized.slice(2, 5)}.${normalized.slice(5, 8)}/${normalized.slice(8, 12)}-${normalized.slice(12, 14)}`;
 }
 
 /**
@@ -56,11 +54,11 @@ export function formatCNPJ(cnpj: string | number): string {
  * @returns CNPJ normalizado (apenas dígitos) ou string vazia
  */
 export function normalizeCNPJ(cnpj: string | number): string {
-  if (!cnpj && cnpj !== 0) return '';
+  if (!cnpj) return '';
 
   const str = String(cnpj).replace(/\D/g, '');
 
-  // Preenche com zeros à esquerda até 14 dígitos
+  // Preenche com zeros à esquerda se necessário
   return str.padStart(14, '0');
 }
 

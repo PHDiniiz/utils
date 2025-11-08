@@ -32,15 +32,9 @@ export function hasRGDVerifier(rg: string): boolean {
   if (!rg || typeof rg !== 'string') return false;
 
   const normalized = rg.toUpperCase().trim();
-  const digitsOnly = normalized.replace(/\D/g, '');
-  
-  // Se o tamanho da string original for maior que apenas dígitos, provavelmente tem dígito verificador
-  if (normalized.length > digitsOnly.length) {
-    const lastChar = normalized.slice(-1);
-    // Dígito verificador pode ser um número ou X
-    return /^[0-9X]$/.test(lastChar);
-  }
+  const lastChar = normalized.slice(-1);
 
-  return false;
+  // Dígito verificador pode ser um número ou X
+  return /^[0-9X]$/.test(lastChar);
 }
 

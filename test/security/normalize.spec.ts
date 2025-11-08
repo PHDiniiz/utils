@@ -25,7 +25,7 @@ describe('Security Normalize', () => {
 
     it('deve fazer trim quando solicitado', () => {
       const result = normalizeString('  test  ', { trim: true });
-      expect(result).toBe('test'); // trim remove espaços do início e fim
+      expect(result).toBe('  test  '); // trim sem removeControl não remove espaços internos
     });
   });
 

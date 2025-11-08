@@ -21,18 +21,10 @@ export function isPhoneBR(phone: string | number): boolean {
   const invalidDDDs = [20, 23, 25, 26, 29, 30, 36, 39, 40, 50, 52, 56, 57, 58, 59, 60, 70, 72, 76, 78, 80, 90];
   if (invalidDDDs.includes(ddd)) return false;
 
-  // Se for celular (11 dígitos), o terceiro dígito (após DDD) deve ser 9
+  // Se for celular (11 dígitos), o terceiro dígito deve ser 9
   if (str.length === 11) {
     const thirdDigit = parseInt(str.charAt(2), 10);
-    if (thirdDigit !== 9) {
-      return false;
-    }
-  } else if (str.length === 10) {
-    // Telefone fixo não pode ter 9 como terceiro dígito
-    const thirdDigit = parseInt(str.charAt(2), 10);
-    if (thirdDigit === 9) {
-      return false;
-    }
+    if (thirdDigit !== 9) return false;
   }
 
   return true;

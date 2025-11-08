@@ -1,3 +1,4 @@
+import { normalizeCPF, normalizeCNPJ } from '../validation/cpf';
 import { normalizeCEP } from '../validation/cep';
 
 /**
@@ -25,8 +26,29 @@ export function applyMask(value: string | number, pattern: string): string {
   return result;
 }
 
-// Re-exporta funções de validation para manter compatibilidade
-export { formatCPF, formatCNPJ } from '../validation';
+/**
+ * Formata CPF no padrão XXX.XXX.XXX-XX
+ * @param cpf - CPF a ser formatado
+ * @returns CPF formatado
+ */
+export function formatCPF(cpf: string | number): string {
+  const normalized = normalizeCPF(cpf);
+  if (normalized.length !== 11) return String(cpf);
+
+  return applyMask(normalized, '###.###.###-##');
+}
+
+/**
+ * Formata CNPJ no padrão XX.XXX.XXX/XXXX-XX
+ * @param cnpj - CNPJ a ser formatado
+ * @returns CNPJ formatado
+ */
+export function formatCNPJ(cnpj: string | number): string {
+  const normalized = normalizeCNPJ(cnpj);
+  if (normalized.length !== 14) return String(cnpj);
+
+  return applyMask(normalized, '##.###.###/####-##');
+}
 
 /**
  * Formata CEP no padrão XXXXX-XXX
@@ -69,8 +91,7 @@ export function formatPhone(phone: string | number): string {
 export function removePunctuation(value: string | number): string {
   if (!value && value !== 0) return '';
 
-  // Remove apenas pontuação, mantendo letras acentuadas e números
-  return String(value).replace(/[^\p{L}\p{N}\s]/gu, '');
+  return String(value).replace(/[^\w\s]/g, '');
 }
 
 /**

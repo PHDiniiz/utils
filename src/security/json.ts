@@ -13,22 +13,19 @@ export function safeJsonStringify(
   maxDepth: number = 10
 ): string {
   const seen = new WeakSet();
-  const depthMap = new WeakMap<object, number>();
 
-  function getDepth(obj: object): number {
-    if (depthMap.has(obj)) {
-      return depthMap.get(obj)!;
+  function safeReplacer(key: string, val: unknown, depth: number): unknown {
+    // Aplica replacer customizado se fornecido
+    if (replacer) {
+      if (typeof replacer === 'function') {
+        val = replacer.call(value, key, val);
+      } else if (Array.isArray(replacer) && !replacer.includes(key)) {
+        return undefined;
+      }
     }
-    return 0;
-  }
 
-  function setDepth(obj: object, depth: number): void {
-    depthMap.set(obj, depth);
-  }
-
-  function safeReplacer(key: string, val: unknown, parentDepth: number = 0): unknown {
     // Limita profundidade
-    if (parentDepth >= maxDepth) {
+    if (depth > maxDepth) {
       return '[Max Depth Reached]';
     }
 
@@ -38,7 +35,6 @@ export function safeJsonStringify(
         return '[Circular Reference]';
       }
       seen.add(val);
-      setDepth(val, parentDepth + 1);
     }
 
     // Remove funções e undefined
@@ -50,91 +46,20 @@ export function safeJsonStringify(
       return undefined;
     }
 
-    // Aplica replacer customizado se fornecido
-    if (replacer) {
-      if (typeof replacer === 'function') {
-        val = replacer.call(value, key, val);
-      } else if (Array.isArray(replacer) && !replacer.includes(key)) {
-        return undefined;
-      }
-    }
-
     return val;
   }
 
   try {
-    // Usa uma abordagem recursiva manual para rastrear profundidade
-    function stringifyRecursive(obj: unknown, depth: number): string {
-      if (depth > maxDepth) {
-        return '"Max Depth Reached"';
-      }
+    const jsonString = JSON.stringify(
+      value,
+      (key, val) => safeReplacer(key, val, 0),
+      space
+    );
 
-      if (obj === null) {
-        return 'null';
-      }
-
-      if (typeof obj === 'string') {
-        return JSON.stringify(obj);
-      }
-
-      if (typeof obj === 'number' || typeof obj === 'boolean') {
-        return String(obj);
-      }
-
-      if (typeof obj === 'function') {
-        return '"Function"';
-      }
-
-      if (typeof obj === 'undefined') {
-        return 'null';
-      }
-
-      if (typeof obj === 'object') {
-        if (seen.has(obj)) {
-          return '"Circular Reference"';
-        }
-        seen.add(obj);
-
-        if (Array.isArray(obj)) {
-          const items = obj.map((item) => stringifyRecursive(item, depth + 1));
-          return `[${items.join(',')}]`;
-        } else {
-          const entries = Object.entries(obj).map(([k, v]) => {
-            const keyStr = JSON.stringify(k);
-            const valStr = stringifyRecursive(v, depth + 1);
-            return `${keyStr}:${valStr}`;
-          });
-          return `{${entries.join(',')}}`;
-        }
-      }
-
-      return 'null';
-    }
-
-    return stringifyRecursive(value, 0);
+    return jsonString;
   } catch (error) {
-    // Fallback: usa JSON.stringify padrão com proteção básica
-    try {
-      const jsonString = JSON.stringify(
-        value,
-        (key, val) => {
-          if (val !== null && typeof val === 'object') {
-            if (seen.has(val)) {
-              return '[Circular Reference]';
-            }
-            seen.add(val);
-          }
-          if (typeof val === 'function') {
-            return '[Function]';
-          }
-          return replacer ? (typeof replacer === 'function' ? replacer.call(value, key, val) : val) : val;
-        },
-        space
-      );
-      return jsonString;
-    } catch {
-      return '';
-    }
+    // Em caso de erro, retorna string vazia
+    return '';
   }
 }
 

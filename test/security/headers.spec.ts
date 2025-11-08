@@ -26,8 +26,7 @@ describe('Security Headers', () => {
 
     it('deve incluir rota quando fornecida', () => {
       const key = rateLimitKey('192.168.1.1', '/api/users');
-      expect(key).toContain('api');
-      expect(key).toContain('users');
+      expect(key).toContain('/api/users');
     });
 
     it('deve lançar erro para IP inválido', () => {
