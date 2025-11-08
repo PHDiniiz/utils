@@ -9,7 +9,13 @@ export function formatDateBR(date: Date | string | number): string {
   if (date instanceof Date) {
     dateObj = date;
   } else if (typeof date === 'string') {
-    dateObj = new Date(date);
+    // Para strings ISO (yyyy-mm-dd), parse manualmente para evitar problemas de timezone
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      const [year, month, day] = date.split('-').map(Number);
+      dateObj = new Date(year, month - 1, day);
+    } else {
+      dateObj = new Date(date);
+    }
   } else if (typeof date === 'number') {
     dateObj = new Date(date);
   } else {

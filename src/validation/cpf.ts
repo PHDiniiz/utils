@@ -40,10 +40,12 @@ export function isCPF(cpf: string | number): boolean {
  * @returns CPF formatado ou string vazia se inválido
  */
 export function formatCPF(cpf: string | number): string {
-  const normalized = normalizeCPF(cpf);
-  if (normalized.length !== 11) return '';
+  if (!cpf && cpf !== 0) return '';
+  
+  const str = String(cpf).replace(/\D/g, '');
+  if (str.length !== 11) return '';
 
-  return `${normalized.slice(0, 3)}.${normalized.slice(3, 6)}.${normalized.slice(6, 9)}-${normalized.slice(9, 11)}`;
+  return `${str.slice(0, 3)}.${str.slice(3, 6)}.${str.slice(6, 9)}-${str.slice(9, 11)}`;
 }
 
 /**

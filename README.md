@@ -26,20 +26,25 @@ yarn add @phdiniiz/utils
 ### Validações
 
 ```typescript
-import { isCPF, isCNPJ, isEmail, isCEP, isPhoneBR, isPlate, isPIS, isDateBR, isRG } from '@phdiniiz/utils/validation';
+import { isCPF, formatCPF, normalizeCPF, isCNPJ, formatCNPJ, normalizeCNPJ, isEmail, isCEP, normalizeCEP, isPhoneBR, isPlate, isOldPlate, isMercosulPlate, isPIS, isDateBR, isRG, hasRGDVerifier } from '@phdiniiz/utils/validation';
 
 // CPF
 isCPF('111.444.777-35'); // true
 isCPF('11144477735'); // true
+formatCPF('11144477735'); // "111.444.777-35"
+normalizeCPF('111.444.777-35'); // "11144477735"
 
 // CNPJ
 isCNPJ('11.222.333/0001-81'); // true
-
-// E-mail
-isEmail('usuario@exemplo.com.br'); // true
+formatCNPJ('11222333000181'); // "11.222.333/0001-81"
+normalizeCNPJ('11.222.333/0001-81'); // "11222333000181"
 
 // CEP
 isCEP('01310-100'); // true
+normalizeCEP('01310-100'); // "01310100"
+
+// E-mail
+isEmail('usuario@exemplo.com.br'); // true
 
 // Telefone brasileiro
 isPhoneBR('(11) 98765-4321'); // true (celular)
@@ -48,6 +53,8 @@ isPhoneBR('(11) 3333-4444'); // true (fixo)
 // Placa de veículo
 isPlate('ABC1234'); // true (padrão antigo)
 isPlate('ABC1D23'); // true (Mercosul)
+isOldPlate('ABC1234'); // true
+isMercosulPlate('ABC1D23'); // true
 
 // PIS/PASEP
 isPIS('120.5643.164-7'); // true
@@ -57,13 +64,14 @@ isDateBR('25/12/2023'); // true
 
 // RG
 isRG('123456789'); // true
+hasRGDVerifier('123456789X'); // true (verifica se tem dígito verificador)
 ```
 
 ### Formatações
 
 ```typescript
-import { formatBRL, formatDateBR, formatDateTimeBR, formatISO } from '@phdiniiz/utils/format';
-import { formatCPF, formatCNPJ, formatCEP, formatPhone } from '@phdiniiz/utils/format';
+import { formatBRL, parseBRL, numberToBRL, brlToNumber, formatDateBR, formatDateTimeBR, formatISO } from '@phdiniiz/utils/format';
+import { formatCPF, formatCNPJ, formatCEP, formatPhone, applyMask, removePunctuation, onlyDigits } from '@phdiniiz/utils/format';
 
 // Moeda
 formatBRL(1234.56); // "R$ 1.234,56"
@@ -79,19 +87,26 @@ formatCPF('11144477735'); // "111.444.777-35"
 formatCNPJ('11222333000181'); // "11.222.333/0001-81"
 formatCEP('01310100'); // "01310-100"
 formatPhone('11987654321'); // "(11) 98765-4321"
+applyMask('12345678901', '###.###.###-##'); // "123.456.789-01"
+removePunctuation('Olá, mundo!'); // "Olá mundo"
+onlyDigits('abc123def456'); // "123456"
 ```
 
 ### Brasil
 
 ```typescript
-import { getStates, getStateByCode, getCitiesByState, lookupCEP } from '@phdiniiz/utils/brazil';
+import { getStates, getStateByCode, getStateByName, isValidStateCode, getCitiesByState, cityExistsInState, getAllMainCities, lookupCEP } from '@phdiniiz/utils/brazil';
 
 // Estados
-const states = getStates();
+const states = getStates(); // Array completo de estados
 const sp = getStateByCode('SP'); // { code: 'SP', name: 'São Paulo' }
+const spByName = getStateByName('São Paulo'); // { code: 'SP', name: 'São Paulo' }
+isValidStateCode('SP'); // true
 
 // Cidades
 const cities = getCitiesByState('SP'); // ['São Paulo', 'Guarulhos', ...]
+cityExistsInState('São Paulo', 'SP'); // true
+const allCities = getAllMainCities(); // Array com todas as cidades principais
 
 // Busca CEP
 const cepData = await lookupCEP('01310-100');
@@ -107,14 +122,16 @@ const cepData = await lookupCEP('01310-100');
 ### Conversores
 
 ```typescript
-import { numberToWords, dateToTimestamp, brlToNumber, numberToBRL } from '@phdiniiz/utils/converter';
+import { numberToWords, dateToTimestamp, dateToTimestampSeconds, dateToUTC, timestampToDate, brlToNumber, numberToBRL } from '@phdiniiz/utils/converter';
 
 // Número por extenso
 numberToWords(123); // "cento e vinte e três"
 
 // Datas
-dateToTimestamp(new Date()); // 1703510400000
+dateToTimestamp(new Date()); // 1703510400000 (milissegundos)
+dateToTimestampSeconds(new Date()); // 1703510400 (segundos)
 dateToUTC(new Date()); // "2023-12-25T10:30:00.000Z"
+timestampToDate(1703510400000); // Date object
 
 // Moeda
 brlToNumber('R$ 1.234,56'); // 1234.56
@@ -124,19 +141,23 @@ numberToBRL(1234.56); // "1.234,56"
 ### Utilitários
 
 ```typescript
-import { slugify, removeEmojis, isValidJSON, generateUUID, generateNanoId, hashSHA256 } from '@phdiniiz/utils/utils';
+import { slugify, removeEmojis, isValidJSON, capitalize, capitalizeWords, generateUUID, generateNanoId, hashSHA256, hashSHA256Sync } from '@phdiniiz/utils/utils';
 
 // Strings
 slugify('Olá Mundo'); // "ola-mundo"
 removeEmojis('Olá 😀'); // "Olá "
 isValidJSON('{"key": "value"}'); // true
+capitalize('hello'); // "Hello"
+capitalizeWords('hello world'); // "Hello World"
 
 // IDs
 generateUUID(); // "550e8400-e29b-41d4-a716-446655440000"
 generateNanoId(); // "V1StGXR8_Z5jdHi6B-myT"
+generateNanoId(10); // Gera nanoid com tamanho customizado
 
 // Hash
 const hash = await hashSHA256('texto'); // "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+const hashSync = hashSHA256Sync('texto'); // Hash síncrono (apenas Node.js)
 ```
 
 ### Datas e Tempo
@@ -167,6 +188,7 @@ import {
   sanitizeForSQL,
   sanitizeForNoSQL,
   normalizeString,
+  normalizeText,
   sanitizeInput,
   validateSchema,
   safeJsonStringify,
@@ -182,11 +204,14 @@ escapeHTML('<script>'); // "&lt;script&gt;"
 sanitizeForSQL("O'Reilly"); // "O''Reilly" (escapa aspas)
 
 // NoSQL
-sanitizeForNoSQL({ $ne: 'value', name: 'test' }); // Remove operadores $ perigosos
+sanitizeForNoSQL({ $ne: 'value', name: 'test' }); // { name: 'test' } (remove operadores $ perigosos)
+deepCleanMongoObject({ $where: 'evil', nested: { $ne: 'value' } }); // Limpeza profunda de objetos MongoDB
 
 // Normalização
-normalizeString('José', { removeDiacritics: true }); // "Jose"
-normalizeText('  Olá Mundo  '); // "ola mundo"
+normalizeString('José', { removeDiacritics: true, trim: true }); // "Jose"
+normalizeText('  Olá Mundo  '); // "ola mundo" (remove acentos, espaços e normaliza)
+normalizeCPF('111.444.777-35'); // "11144477735"
+normalizeCNPJ('11.222.333/0001-81'); // "11222333000181"
 
 // Sanitização geral
 sanitizeInput('<script>alert(1)</script>'); // Remove XSS
@@ -201,11 +226,12 @@ if (result.success) {
 }
 
 // JSON seguro
-safeJsonStringify({ key: 'value' }); // Serializa com proteção contra referências circulares
+safeJsonStringify({ key: 'value' }); // Serializa com proteção contra referências circulares e limite de profundidade
+safeJsonStringify(circularObj, undefined, undefined, 10); // Limite de profundidade configurável
 
 // Headers de segurança
-cspHeader(); // Gera header Content-Security-Policy
-rateLimitKey('192.168.1.1', '/api/users'); // "ratelimit:192_168_1_1:/api/users"
+cspHeader(); // Gera header Content-Security-Policy com sane defaults
+rateLimitKey('192.168.1.1', '/api/users'); // "ratelimit:192_168_1_1:api:users"
 ```
 
 ### Middleware (Express/NestJS)

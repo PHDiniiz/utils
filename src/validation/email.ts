@@ -21,9 +21,6 @@ export function isEmail(email: string): boolean {
   // Verifica formato básico
   if (!EMAIL_REGEX.test(trimmed)) return false;
 
-  // Verifica que não começa ou termina com ponto
-  if (trimmed.startsWith('.') || trimmed.endsWith('.')) return false;
-
   // Verifica que não tem pontos consecutivos
   if (trimmed.includes('..')) return false;
 
@@ -31,9 +28,11 @@ export function isEmail(email: string): boolean {
 
   // Valida parte local (antes do @)
   if (!localPart || localPart.length > 64) return false;
+  if (localPart.startsWith('.') || localPart.endsWith('.')) return false;
 
   // Valida domínio
   if (!domain || domain.length > 253) return false;
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
 
   return true;
 }

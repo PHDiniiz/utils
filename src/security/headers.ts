@@ -98,7 +98,8 @@ export function rateLimitKey(ip: string, route?: string): string {
   const parts = ['ratelimit', ip.replace(/[^a-zA-Z0-9]/g, '_')];
 
   if (route) {
-    parts.push(route.replace(/[^a-zA-Z0-9]/g, '_'));
+    // Substitui caracteres não alfanuméricos por underscore, mas mantém a estrutura da rota
+    parts.push(route.replace(/[^a-zA-Z0-9/]/g, (match) => (match === '/' ? ':' : '_')));
   }
 
   return parts.join(':');

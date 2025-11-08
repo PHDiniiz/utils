@@ -17,13 +17,14 @@ describe('Security JSON', () => {
     });
 
     it('deve limitar profundidade', () => {
-      let obj: Record<string, unknown> = {};
-      let current = obj;
-      for (let i = 0; i < 15; i++) {
-        current.nested = {};
-        current = current.nested as Record<string, unknown>;
-      }
+      // Cria objeto aninhado profundamente
+      const createNested = (depth: number): Record<string, unknown> => {
+        if (depth === 0) return { value: 'end' };
+        return { nested: createNested(depth - 1) };
+      };
+      const obj = createNested(15);
       const result = safeJsonStringify(obj, undefined, undefined, 10);
+      // Deve conter "Max Depth Reached" quando excede profundidade
       expect(result).toContain('Max Depth Reached');
     });
 

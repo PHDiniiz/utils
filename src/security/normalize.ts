@@ -1,5 +1,5 @@
-import { normalizeCPF as normalizeCPFValidation } from '../validation/cpf';
-import { normalizeCNPJ as normalizeCNPJValidation } from '../validation/cnpj';
+// Re-exporta funções de validation para manter compatibilidade
+export { normalizeCPF, normalizeCNPJ } from '../validation';
 
 /**
  * Opções para normalização de string
@@ -77,21 +77,4 @@ export function normalizeText(text: string): string {
   });
 }
 
-/**
- * Normaliza CPF (apenas dígitos)
- * @param cpf - CPF a ser normalizado
- * @returns CPF normalizado
- */
-export function normalizeCPF(cpf: string | number): string {
-  return normalizeCPFValidation(cpf);
-}
-
-/**
- * Normaliza CNPJ (apenas dígitos)
- * @param cnpj - CNPJ a ser normalizado
- * @returns CNPJ normalizado
- */
-export function normalizeCNPJ(cnpj: string | number): string {
-  return normalizeCNPJValidation(cnpj);
-}
 
